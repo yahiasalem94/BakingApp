@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         // Begin the transaction
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         // Replace the contents of the container with the new fragment
-        ft.replace(R.id.your_placeholder, new RecipesFragment()).commit();
+        ft.replace(R.id.placeholder, new RecipesFragment()).commit();
     }
 
 

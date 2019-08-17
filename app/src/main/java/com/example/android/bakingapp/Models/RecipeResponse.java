@@ -7,20 +7,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class RecipeData implements Serializable {
+public class RecipeResponse implements Serializable {
 
     @SerializedName("id")
     private Integer id;
     @SerializedName("name")
     private String recipeName;
     @SerializedName("ingredients")
-    private ArrayList<Ingredients> ingredients;
+    private ArrayList<RecipeIngredients> ingredients;
+    @SerializedName("steps")
+    private ArrayList<RecipeSteps> steps;
 
 
-    public RecipeData() {
+    public RecipeResponse() {
         /* Empty Constructor */
     }
-    public RecipeData(Integer id, String recipeName, ArrayList<Ingredients> ingredients) {
+    public RecipeResponse(Integer id, String recipeName, ArrayList<RecipeIngredients> ingredients) {
         this.id = id;
         this.recipeName = recipeName;
         this.ingredients = ingredients;
@@ -42,12 +44,20 @@ public class RecipeData implements Serializable {
         this.recipeName = recipeName;
     }
 
-    public ArrayList<Ingredients> getIngredients() {
+    public ArrayList<RecipeIngredients> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(ArrayList<Ingredients> ingredients) {
+    public void setIngredients(ArrayList<RecipeIngredients> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public ArrayList<RecipeSteps> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(ArrayList<RecipeSteps> steps) {
+        this.steps = steps;
     }
 
 }

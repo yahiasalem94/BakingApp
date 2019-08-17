@@ -1,4 +1,4 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,14 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.android.bakingapp.Models.RecipeData;
+import com.example.android.bakingapp.Models.RecipeResponse;
+import com.example.android.bakingapp.R;
 
 import java.util.ArrayList;
 
 
 public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapterViewHolder> {
 
-    private ArrayList<RecipeData> mRecipeData;
+    private ArrayList<RecipeResponse> mRecipeData;
     private final RecipesAdapterOnClickHandler mClickHandler;
 
 
@@ -46,7 +47,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapterViewHolde
         return mRecipeData.size();
     }
 
-    public void setMoviesData(ArrayList<RecipeData> recipeData) {
+    public void setMoviesData(ArrayList<RecipeResponse> recipeData) {
         this.mRecipeData = recipeData;
         notifyDataSetChanged();
     }

@@ -1,17 +1,20 @@
 package com.example.android.bakingapp;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.example.android.bakingapp.Models.RecipeData;
+import com.example.android.bakingapp.Adapters.RecipesAdapter;
+import com.example.android.bakingapp.Models.RecipeResponse;
 import com.example.android.bakingapp.Utils.ApiInterface;
 import com.example.android.bakingapp.Utils.NetworkUtils;
 
@@ -26,13 +29,21 @@ public class RecipesFragment extends Fragment  implements RecipesAdapter.Recipes
 
     private static final String TAG = RecipesFragment.class.getSimpleName();
 
+
     private RecyclerView recipesRecyclerView;
+    private ProgressBar mLoadingIndicator;
+    private TextView mErrorMessageDisplay;
+
     private LinearLayoutManager layoutManager;
     private RecipesAdapter recipesAdapter;
 
     private ApiInterface apiService;
 
-    private ArrayList<RecipeData> recipesList;
+    private ArrayList<RecipeResponse> recipesList;
+    private boolean isConnected;
+
+    private static final String STEPS_LIST = "stepsList";
+    private static final String INGREDIENTS_LIST = "ingredientsList";
 
     public RecipesFragment() {
         // Required empty public constructor
@@ -46,39 +57,15 @@ public class RecipesFragment extends Fragment  implements RecipesAdapter.Recipes
         loadData();
     }
 
-    private void loadData() {
-        Call<ArrayList<RecipeData>> call = apiService.getRecipes();
-
-        call.enqueue(new Callback<ArrayList<RecipeData>>() {
-            @Override
-            public void onResponse(Call<ArrayList<RecipeData>> call, Response<ArrayList<RecipeData>> response) {
-
-                recipesList = response.body();
-//                mLoadingIndicator.setVisibility(View.INVISIBLE);
-                recipesAdapter.setMoviesData(recipesList);
-//                mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<RecipeData>> call, Throwable t) {
-
-                Log.e(TAG, t.toString());
-//                mLoadingIndicator.setVisibility(View.INVISIBLE);
-//
-//                if ( t instanceof IOException) {
-//                    isConnected = false;
-//                }
-//
-//                showErrorMessage(isConnected);
-
-            }
-        });
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        View rootView = inflater.inflate(R.layout.fragment_recipes, container, false);
+
+        mLoadingIndicator = rootView.findViewById(R.id.pb_loading_indicator);
+        mErrorMessageDisplay = rootView.findViewById(R.id.tv_error_message_display);
         // Inflate the fragment's layout
-        return inflater.inflate(R.layout.fragment_recipes, container, false);
+        return rootView;
 
     }
 
@@ -95,6 +82,61 @@ public class RecipesFragment extends Fragment  implements RecipesAdapter.Recipes
 
     @Override
     public void onClick(int position) {
+        Log.d(TAG, recipesList.get(position).getRecipeName());
+        RecipeDetails fragment = new RecipeDetails();
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STEPS_LIST, recipesList.get(position).getSteps());
+        bundle.putParcelableArrayList(INGREDIENTS_LIST, recipesList.get(position).getIngredients());
+        fragment.setArguments(bundle);
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.placeholder, fragment);
+        transaction.commit();
+    }
 
+    public static void onConnectionChange(boolean connected) {
+        Log.i(TAG, "Connection is" + " " + connected);
+    }
+    /* Local Functions */
+    private void showDataView() {
+        /* First, make sure the error is invisible */
+      //  mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        /* Then, make sure the weather data is visible */
+        //recipesRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorMessage() {
+
+        /* First, hide the currently visible data */
+        recipesRecyclerView.setVisibility(View.INVISIBLE);
+        /* Then, show the error */
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    private void loadData() {
+
+        showDataView();
+//        mLoadingIndicator.setVisibility(View.VISIBLE);
+
+        Call<ArrayList<RecipeResponse>> call = apiService.getRecipes();
+
+        call.enqueue(new Callback<ArrayList<RecipeResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<RecipeResponse>> call, Response<ArrayList<RecipeResponse>> response) {
+
+                recipesList = response.body();
+//                mLoadingIndicator.setVisibility(View.INVISIBLE);
+                recipesAdapter.setMoviesData(recipesList);
+//                recipesRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<RecipeResponse>> call, Throwable t) {
+
+                Log.e(TAG, t.toString());
+//                mLoadingIndicator.setVisibility(View.INVISIBLE);
+                showErrorMessage();
+
+            }
+        });
     }
 }

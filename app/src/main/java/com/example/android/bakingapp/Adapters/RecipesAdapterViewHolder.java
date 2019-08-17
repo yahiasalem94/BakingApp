@@ -1,9 +1,10 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.Adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.android.bakingapp.R;
 
 public class RecipesAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

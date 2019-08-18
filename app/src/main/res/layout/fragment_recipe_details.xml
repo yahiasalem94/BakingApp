@@ -19,7 +19,9 @@
                 android:id="@+id/textviewIg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ingredients"/>
+                android:layout_centerHorizontal="true"
+                android:textSize="@dimen/title_text_size"
+                android:text="Ingredients" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recipesIngredientsRecyclerView"
@@ -41,6 +43,8 @@
                 android:id="@+id/textviewSteps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textSize="@dimen/title_text_size"
                 android:text="Steps"/>
 
             <android.support.v7.widget.RecyclerView

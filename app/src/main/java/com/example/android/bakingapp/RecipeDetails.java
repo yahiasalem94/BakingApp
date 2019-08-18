@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.RecipeDetailsAdapterOnClickHandler {
 
     private static final String TAG = RecipeDetails.class.getSimpleName();
+    private static final String TAG_RECIPE_STEP_FRAGMENT = "RecipeStep";
 
     private RecyclerView recipesStepsRecyclerView;
     private LinearLayoutManager layoutManagerSteps;
@@ -35,7 +36,8 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
     private static final String STEPS_LIST = "stepsList";
     private static final String INGREDIENTS_LIST = "ingredientsList";
-    private static final String RECIPE_STEP = "recipeStep";
+    private static final String RECIPE_STEPS = "recipeStep";
+    private static final String RECIPE_STEP_POSITION = "recipeStepPosition";
 
     public RecipeDetails() {
         // Required empty public constructor
@@ -91,10 +93,19 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         Log.d(TAG, recipesSteps.get(position).getDescription());
         RecipeStep fragment = new RecipeStep();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(RECIPE_STEP, recipesSteps.get(position));
+        bundle.putInt(RECIPE_STEP_POSITION, position);
+        bundle.putParcelableArrayList(RECIPE_STEPS, recipesSteps);
         fragment.setArguments(bundle);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.placeholder, fragment);
+        transaction.replace(R.id.placeholder, fragment, TAG_RECIPE_STEP_FRAGMENT);
         transaction.commit();
+    }
+
+    public void setData(ArrayList<RecipeSteps> recipesSteps, ArrayList<RecipeIngredients> recipeIngredients) {
+        this.recipesSteps = recipesSteps;
+        this.recipeIngredients = recipeIngredients;
+
+        recipesStepsAdapter.setRecipeSteps(recipesSteps);
+        recipeIngredientsAdapter.setRecipeIngredients(recipeIngredients);
     }
 }

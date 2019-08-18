@@ -1,18 +1,16 @@
 package com.example.android.bakingapp;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -27,10 +25,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+public class Recipes extends AppCompatActivity implements RecipesAdapter.RecipesAdapterOnClickHandler {
 
-public class RecipesFragment extends Fragment  implements RecipesAdapter.RecipesAdapterOnClickHandler  {
-
-    private static final String TAG = RecipesFragment.class.getSimpleName();
+    private static final String TAG = Recipes.class.getSimpleName();
 
 
     private RecyclerView recipesRecyclerView;
@@ -52,44 +49,49 @@ public class RecipesFragment extends Fragment  implements RecipesAdapter.Recipes
     private static final String INGREDIENTS_LIST = "ingredientsList";
     private static final float TABLET_MIN_WIDTH = 600;
 
-    public RecipesFragment() {
-        // Required empty public constructor
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.fragment_recipes);
+
+        recipesRecyclerView = findViewById(R.id.recipesRecyclerView);
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+        mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
 
         displayMetrics = this.getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
         recipesAdapter = new RecipesAdapter(this);
+        initializeRecyclerView();
+
         apiService = NetworkUtils.getRetrofitInstance().create(ApiInterface.class);
         loadData();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.fragment_recipes, container, false);
-
-        mLoadingIndicator = rootView.findViewById(R.id.pb_loading_indicator);
-        mErrorMessageDisplay = rootView.findViewById(R.id.tv_error_message_display);
-        // Inflate the fragment's layout
-        return rootView;
 
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        // Create the recyclerview.
-        recipesRecyclerView = view.findViewById(R.id.recipesRecyclerView);
-        Log.d(TAG, "onViewCreated");
+    public void onClick(int position) {
+
+        Log.d(TAG, recipesList.get(position).getRecipeName());
+        Intent intent = new Intent(Recipes.this, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(STEPS_LIST, recipesList.get(position).getSteps());
+        bundle.putParcelableArrayList(INGREDIENTS_LIST, recipesList.get(position).getIngredients());
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+
+    /* Local Functions */
+
+    private void initializeRecyclerView() {
+
         if (dpWidth >= TABLET_MIN_WIDTH) {
-            gridLayoutManager = new GridLayoutManager(view.getContext(), calculateNoOfColumns(getContext()));
+            gridLayoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
             recipesRecyclerView.setLayoutManager(gridLayoutManager);
         } else {
-            linearLayoutManager = new LinearLayoutManager(view.getContext());
+            linearLayoutManager = new LinearLayoutManager(this);
             recipesRecyclerView.setLayoutManager(linearLayoutManager);
         }
 
@@ -97,26 +99,9 @@ public class RecipesFragment extends Fragment  implements RecipesAdapter.Recipes
         recipesRecyclerView.setAdapter(recipesAdapter);
     }
 
-    @Override
-    public void onClick(int position) {
-        Log.d(TAG, recipesList.get(position).getRecipeName());
-        RecipeDetails fragment = new RecipeDetails();
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(STEPS_LIST, recipesList.get(position).getSteps());
-        bundle.putParcelableArrayList(INGREDIENTS_LIST, recipesList.get(position).getIngredients());
-        fragment.setArguments(bundle);
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.placeholder, fragment);
-        transaction.commit();
-    }
-
-    public static void onConnectionChange(boolean connected) {
-        Log.i(TAG, "Connection is" + " " + connected);
-    }
-    /* Local Functions */
     private void showDataView() {
         /* First, make sure the error is invisible */
-      //  mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        //  mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         /* Then, make sure the weather data is visible */
         //recipesRecyclerView.setVisibility(View.VISIBLE);
     }
@@ -132,11 +117,11 @@ public class RecipesFragment extends Fragment  implements RecipesAdapter.Recipes
     private static int calculateNoOfColumns(Context context) {
 
         Log.d(TAG, dpWidth+"");
-            int scalingFactor = 200;
-            int noOfColumns = (int) (dpWidth / scalingFactor);
-            if (noOfColumns < 2)
-                noOfColumns = 2;
-            return noOfColumns;
+        int scalingFactor = 200;
+        int noOfColumns = (int) (dpWidth / scalingFactor);
+        if (noOfColumns < 2)
+            noOfColumns = 2;
+        return noOfColumns;
     }
 
     private void loadData() {
@@ -150,6 +135,7 @@ public class RecipesFragment extends Fragment  implements RecipesAdapter.Recipes
             @Override
             public void onResponse(Call<ArrayList<RecipeResponse>> call, Response<ArrayList<RecipeResponse>> response) {
 
+                Log.d(TAG, response.body().get(0).getRecipeName());
                 recipesList = response.body();
 //                mLoadingIndicator.setVisibility(View.INVISIBLE);
                 recipesAdapter.setMoviesData(recipesList);

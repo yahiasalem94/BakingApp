@@ -53,8 +53,11 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
     private ArrayList<RecipeSteps> steps;
     private RecipeSteps step;
     private int stepPosition;
-    private String videoUrl = null;
-    private String imageUrl = null;
+
+    private String videoUrl;
+    private String imageUrl;
+    private boolean isVideo = false;
+    private boolean isImage = false;
 
 
     FragmentRecipeStepBinding binding;
@@ -76,6 +79,8 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
 
         videoUrl = step.getVideoUrl();
         imageUrl = step.getImageUrl();
+        if (!videoUrl.isEmpty()) isVideo = true;
+        if (!imageUrl.isEmpty()) isImage = true;
     }
 
     @Override
@@ -89,7 +94,7 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
         Log.d(TAG, "video is " + videoUrl);
         Log.d(TAG, "image is " + imageUrl);
 
-        if (videoUrl.isEmpty() && !imageUrl.isEmpty()) {
+        if ((!isVideo && isImage) || (!isVideo && !isImage)) {
             Log.d(TAG, "image url is" + " " + imageUrl);
             binding.playerView.setVisibility(View.GONE);
             binding.imageStepRecipe.setVisibility(View.VISIBLE);
@@ -113,7 +118,7 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
 
         Log.d(TAG, "onViewCreated");
 
-        if ( !videoUrl.isEmpty()) {
+        if (isVideo) {
             Log.d(TAG, "video url is not null");
 
             // Load the question mark as the background image until the video is loaded
@@ -123,9 +128,11 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
             initializeMediaSession();
             // Initialize the player.
             initializePlayer(Uri.parse(videoUrl));
-        } else if (!imageUrl.isEmpty()) {
+        } else if (isImage) {
             Log.d(TAG, "image url is not null");
-            Picasso.get().load(imageUrl).placeholder(R.drawable.question_mark).into(binding.imageStepRecipe);
+            Picasso.get().load(imageUrl).placeholder(R.drawable.unavailable).into(binding.imageStepRecipe);
+        } else {
+            binding.imageStepRecipe.setImageResource(R.drawable.unavailable);
         }
     }
 

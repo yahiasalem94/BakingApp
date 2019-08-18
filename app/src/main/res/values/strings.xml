@@ -4,5 +4,7 @@
     <string name="Test">Test</string>
     <string name="nextStep">Next Step</string>
     <string name="prevStep">Previous Step</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="steps">Recipe Steps</string>
 
 </resources>

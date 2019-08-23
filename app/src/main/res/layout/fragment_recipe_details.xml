@@ -19,10 +19,20 @@
                 android:id="@+id/textviewIg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:textSize="@dimen/title_text_size"
                 android:text="@string/ingredients" />
+
+            <RadioButton
+                android:id="@+id/add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:text="@string/add"
+                android:checked="false"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recipesIngredientsRecyclerView"

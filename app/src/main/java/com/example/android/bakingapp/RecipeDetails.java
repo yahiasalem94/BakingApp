@@ -9,11 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 
 import com.example.android.bakingapp.Adapters.RecipeDetailsAdapter;
 import com.example.android.bakingapp.Adapters.RecipeIngredientsAdapter;
 import com.example.android.bakingapp.Models.RecipeIngredients;
 import com.example.android.bakingapp.Models.RecipeSteps;
+import com.example.android.bakingapp.Utils.SharedPreferenceUtil;
+import com.example.android.bakingapp.Widget.IngredientUpdateService;
 
 import java.util.ArrayList;
 
@@ -21,6 +24,7 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
     private static final String TAG = RecipeDetails.class.getSimpleName();
     private static final String TAG_RECIPE_STEP_FRAGMENT = "RecipeStep";
+    private static final String ADD_RECIPE = "addedIngredient";
 
     private RecyclerView recipesStepsRecyclerView;
     private LinearLayoutManager layoutManagerSteps;
@@ -30,9 +34,13 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
     private LinearLayoutManager layoutManagerIngredients;
     private RecipeIngredientsAdapter recipeIngredientsAdapter;
 
+    private RadioButton addButton;
+
     private ArrayList<RecipeSteps> recipesSteps;
     private ArrayList<RecipeIngredients> recipeIngredients;
+    private ArrayList<RecipeIngredients> savedIngredients;
 
+    boolean isSaved = false;
 
     private static final String STEPS_LIST = "stepsList";
     private static final String INGREDIENTS_LIST = "ingredientsList";
@@ -60,6 +68,14 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
             }
         }
 
+        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(ADD_RECIPE, getActivity().getApplicationContext());
+        if (savedIngredients != null) {
+            if (savedIngredients.get(0).getIngredient().equals(recipeIngredients.get(0).getIngredient())) {
+                isSaved = true;
+            }
+        }
+
+
         recipesStepsAdapter.setRecipeSteps(recipesSteps);
         recipeIngredientsAdapter.setRecipeIngredients(recipeIngredients);
     }
@@ -81,6 +97,21 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         recipesIngredientRecyclerView = view.findViewById(R.id.recipesIngredientsRecyclerView);
         layoutManagerIngredients = new LinearLayoutManager(view.getContext());
         recipesIngredientRecyclerView.setLayoutManager(layoutManagerIngredients);
+
+        addButton = view.findViewById(R.id.add_button);
+        addButton.setChecked(isSaved);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean checked = ((RadioButton) v).isChecked();
+
+                if (checked) {
+                    SharedPreferenceUtil.clearAllIngredients(getActivity().getApplicationContext());
+                    SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(ADD_RECIPE, recipeIngredients, getActivity().getApplicationContext());
+                    IngredientUpdateService.startActionWaterPlant(getActivity().getApplicationContext());
+                }
+            }
+        });
 
         // Set data adapter.
         recipesStepsRecyclerView.setAdapter(recipesStepsAdapter);

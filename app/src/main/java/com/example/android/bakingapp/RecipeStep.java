@@ -96,6 +96,7 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
             binding.imageStepRecipe.setVisibility(View.VISIBLE);
         }
 
+        binding.recipeStepName.setText(step.getDescription());
         binding.buttonPrevStep.setOnClickListener(this);
         binding.buttonNextStep.setOnClickListener(this);
 

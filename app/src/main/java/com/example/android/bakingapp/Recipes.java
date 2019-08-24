@@ -89,6 +89,7 @@ public class Recipes extends AppCompatActivity implements RecipesAdapter.Recipes
         Log.d(TAG, recipesList.get(position).getRecipeName());
         Intent intent = new Intent(Recipes.this, RecipeDetailsMainActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putString(Constants.RECIPE_NAME, recipesList.get(position).getRecipeName());
         bundle.putParcelableArrayList(Constants.STEPS_LIST, recipesList.get(position).getSteps());
         bundle.putParcelableArrayList(Constants.INGREDIENTS_LIST, recipesList.get(position).getIngredients());
         intent.putExtras(bundle);

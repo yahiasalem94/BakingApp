@@ -21,14 +21,18 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
     private Bundle recipeBundle;
     private ArrayList<RecipeSteps> recipesSteps;
     private ArrayList<RecipeIngredients> recipeIngredients;
+    private String recipeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(getIntent().hasExtra(Constants.STEPS_LIST) && getIntent().hasExtra(Constants.INGREDIENTS_LIST)) {
+        if(getIntent().hasExtra(Constants.STEPS_LIST) && getIntent().hasExtra(Constants.INGREDIENTS_LIST)
+                && getIntent().hasExtra(Constants.RECIPE_NAME)) {
+
             recipeBundle = getIntent().getExtras();
+            recipeName = getIntent().getStringExtra(Constants.RECIPE_NAME);
             recipesSteps = recipeBundle.getParcelableArrayList(Constants.STEPS_LIST);
             recipeIngredients = recipeBundle.getParcelableArrayList(Constants.INGREDIENTS_LIST);
         }
@@ -57,6 +61,7 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
             }
         } else {
             RecipeDetails fragment = new RecipeDetails();
+            recipeBundle.putString(Constants.RECIPE_NAME, recipeName);
             fragment.setArguments(recipeBundle);
             // Begin the transaction
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

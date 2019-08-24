@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.example.android.bakingapp.Adapters.RecipeDetailsAdapter;
 import com.example.android.bakingapp.Adapters.RecipeIngredientsAdapter;
@@ -34,9 +35,11 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
     private RecipeIngredientsAdapter recipeIngredientsAdapter;
 
     private RadioButton addButton;
+    private TextView recipeName;
 
     private ArrayList<RecipeSteps> recipesSteps;
     private ArrayList<RecipeIngredients> recipeIngredients;
+    private String mRecipeName;
     private ArrayList<RecipeIngredients> savedIngredients = null;
 
     boolean isSaved = false;
@@ -59,6 +62,10 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
             if (getArguments().containsKey(Constants.INGREDIENTS_LIST)) {
                 recipeIngredients = getArguments().getParcelableArrayList(Constants.INGREDIENTS_LIST);
+            }
+
+            if (getArguments().containsKey(Constants.RECIPE_NAME)) {
+                mRecipeName = getArguments().getString(Constants.RECIPE_NAME);
             }
         }
 
@@ -92,6 +99,8 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         layoutManagerIngredients = new LinearLayoutManager(view.getContext());
         recipesIngredientRecyclerView.setLayoutManager(layoutManagerIngredients);
 
+        recipeName = view.findViewById(R.id.recipeName);
+        recipeName.setText(mRecipeName);
         addButton = view.findViewById(R.id.add_button);
         addButton.setChecked(isSaved);
         addButton.setOnClickListener(new View.OnClickListener() {

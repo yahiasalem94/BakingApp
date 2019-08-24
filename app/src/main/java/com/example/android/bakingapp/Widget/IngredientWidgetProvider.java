@@ -6,14 +6,12 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 
-import com.example.android.bakingapp.MainActivity;
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.RecipeDetails;
-import com.example.android.bakingapp.Recipes;
+import com.example.android.bakingapp.RecipeDetailsMainActivity;
+import com.example.android.bakingapp.Utils.Constants;
 import com.example.android.bakingapp.Utils.SharedPreferenceUtil;
 
 public class IngredientWidgetProvider extends AppWidgetProvider {
@@ -73,10 +71,10 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
 
     private static RemoteViews getSingleRemoteView(Context context, String ingredient, double quantity, String measure) {
 
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, RecipeDetailsMainActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(MainActivity.STEPS_LIST, SharedPreferenceUtil.getRecipeStepsFromSharedPrefsForKey(RecipeDetails.ADDED_STEPS, context.getApplicationContext()));
-        bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(RecipeDetails.ADDED_INGREDIENT, context.getApplicationContext()));
+        bundle.putParcelableArrayList(Constants.STEPS_LIST, SharedPreferenceUtil.getRecipeStepsFromSharedPrefsForKey(Constants.ADDED_STEPS, context.getApplicationContext()));
+        bundle.putParcelableArrayList(Constants.INGREDIENTS_LIST, SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, context.getApplicationContext()));
         intent.putExtras(bundle);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -106,7 +104,7 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
         Intent intent = new Intent(context, ListWidgetService.class);
         views.setRemoteAdapter(R.id.widget_list_view, intent);
         // Set the PlantDetailActivity intent to launch when clicked
-        Intent appIntent = new Intent(context, MainActivity.class);
+        Intent appIntent = new Intent(context, RecipeDetailsMainActivity.class);
         intent.putExtra(FRAGMENT_KEY, FRAGMENT_VALUE);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.widget_list_view, pendingIntent);

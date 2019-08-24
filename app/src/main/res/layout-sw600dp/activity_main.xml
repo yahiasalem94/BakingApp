@@ -4,18 +4,18 @@
     android:layout_height="match_parent"
     android:baselineAligned="false"
     android:orientation="horizontal"
-    tools:context=".MainActivity">
+    tools:context=".RecipeDetailsMainActivity">
 
     <!-- The static MasterListFragment -->
     <fragment
         android:id="@+id/master_list_fragment"
         android:name="com.example.android.bakingapp.RecipeDetails"
-        android:layout_width="300dp"
+        android:layout_width="@dimen/activity_main_fragment_width"
         android:layout_height="match_parent" />
 
     <!-- A small divider -->
     <View
-        android:layout_width="1dp"
+        android:layout_width="@dimen/activity_main_view_width"
         android:layout_height="match_parent"
         android:background="@android:color/darker_gray" />
 

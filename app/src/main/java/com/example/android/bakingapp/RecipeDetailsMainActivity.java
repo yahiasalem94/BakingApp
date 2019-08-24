@@ -1,23 +1,21 @@
 package com.example.android.bakingapp;
 
+import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.example.android.bakingapp.Models.RecipeIngredients;
 import com.example.android.bakingapp.Models.RecipeSteps;
+import com.example.android.bakingapp.Utils.Constants;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class RecipeDetailsMainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String TAG_RECIPE_STEP_FRAGMENT = "RecipeStep";
-    public static final String STEPS_LIST = "stepsList";
-    public static final String INGREDIENTS_LIST = "ingredientsList";
-    private static final String RECIPE_STEPS = "recipeStep";
-    private static final String RECIPE_STEP_POSITION = "recipeStepPosition";
+    private static final String TAG = RecipeDetailsMainActivity.class.getSimpleName();
+
+
 
 
     private Bundle recipeBundle;
@@ -29,10 +27,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(getIntent().hasExtra(STEPS_LIST) && getIntent().hasExtra(INGREDIENTS_LIST)) {
+        if(getIntent().hasExtra(Constants.STEPS_LIST) && getIntent().hasExtra(Constants.INGREDIENTS_LIST)) {
             recipeBundle = getIntent().getExtras();
-            recipesSteps = recipeBundle.getParcelableArrayList(STEPS_LIST);
-            recipeIngredients = recipeBundle.getParcelableArrayList(INGREDIENTS_LIST);
+            recipesSteps = recipeBundle.getParcelableArrayList(Constants.STEPS_LIST);
+            recipeIngredients = recipeBundle.getParcelableArrayList(Constants.INGREDIENTS_LIST);
         }
 
         if (findViewById(R.id.master_list_fragment) != null) {
@@ -44,15 +42,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "savedInstanceNull");
                 RecipeStep recipeStepFragment = new RecipeStep();
                 Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList(RECIPE_STEPS, recipesSteps);
-                bundle.putInt(RECIPE_STEP_POSITION, 0);
+                bundle.putParcelableArrayList(Constants.STEPS_LIST, recipesSteps);
+                bundle.putInt(Constants.RECIPE_STEP_POSITION, 0);
                 recipeStepFragment.setArguments(bundle);
                 // Begin the transaction
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 // Replace the contents of the container with the new fragment
-                ft.replace(R.id.placeholder, recipeStepFragment, TAG_RECIPE_STEP_FRAGMENT).commit();
+                ft.replace(R.id.placeholder, recipeStepFragment, Constants.TAG_RECIPE_STEP_FRAGMENT).commit();
             } else {
-                RecipeStep fragment = (RecipeStep) getSupportFragmentManager().findFragmentByTag(TAG_RECIPE_STEP_FRAGMENT);
+                RecipeStep fragment = (RecipeStep) getSupportFragmentManager().findFragmentByTag(Constants.TAG_RECIPE_STEP_FRAGMENT);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 // Replace the contents of the container with the new fragment
                 ft.replace(R.id.placeholder, fragment).commit();

@@ -15,6 +15,7 @@ import com.example.android.bakingapp.Adapters.RecipeDetailsAdapter;
 import com.example.android.bakingapp.Adapters.RecipeIngredientsAdapter;
 import com.example.android.bakingapp.Models.RecipeIngredients;
 import com.example.android.bakingapp.Models.RecipeSteps;
+import com.example.android.bakingapp.Utils.Constants;
 import com.example.android.bakingapp.Utils.SharedPreferenceUtil;
 import com.example.android.bakingapp.Widget.IngredientUpdateService;
 
@@ -23,9 +24,6 @@ import java.util.ArrayList;
 public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.RecipeDetailsAdapterOnClickHandler {
 
     private static final String TAG = RecipeDetails.class.getSimpleName();
-    private static final String TAG_RECIPE_STEP_FRAGMENT = "RecipeStep";
-    public static final String ADDED_INGREDIENT = "addedIngredient";
-    public static final String ADDED_STEPS = "addedSteps";
 
     private RecyclerView recipesStepsRecyclerView;
     private LinearLayoutManager layoutManagerSteps;
@@ -43,11 +41,6 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
     boolean isSaved = false;
 
-    private static final String STEPS_LIST = "stepsList";
-    private static final String INGREDIENTS_LIST = "ingredientsList";
-    private static final String RECIPE_STEPS = "recipeStep";
-    private static final String RECIPE_STEP_POSITION = "recipeStepPosition";
-
     public RecipeDetails() {
         // Required empty public constructor
     }
@@ -60,16 +53,16 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
         if (getArguments() != null) {
 
-            if (getArguments().containsKey(STEPS_LIST)) {
-                recipesSteps = getArguments().getParcelableArrayList(STEPS_LIST);
+            if (getArguments().containsKey(Constants.STEPS_LIST)) {
+                recipesSteps = getArguments().getParcelableArrayList(Constants.STEPS_LIST);
             }
 
-            if (getArguments().containsKey(INGREDIENTS_LIST)) {
-                recipeIngredients = getArguments().getParcelableArrayList(INGREDIENTS_LIST);
+            if (getArguments().containsKey(Constants.INGREDIENTS_LIST)) {
+                recipeIngredients = getArguments().getParcelableArrayList(Constants.INGREDIENTS_LIST);
             }
         }
 
-        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(ADDED_INGREDIENT, getActivity().getApplicationContext());
+        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, getActivity().getApplicationContext());
         if (savedIngredients != null) {
             if (savedIngredients.get(0).getIngredient().equals(recipeIngredients.get(0).getIngredient())) {
                 isSaved = true;
@@ -108,8 +101,8 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
                 if (checked) {
                     SharedPreferenceUtil.clearAll(getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(ADDED_INGREDIENT, recipeIngredients, getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setRecipeStepsToSharedPrefsForKey(ADDED_STEPS, recipesSteps, getActivity().getApplicationContext());
+                    SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(Constants.ADDED_INGREDIENT, recipeIngredients, getActivity().getApplicationContext());
+                    SharedPreferenceUtil.setRecipeStepsToSharedPrefsForKey(Constants.ADDED_STEPS, recipesSteps, getActivity().getApplicationContext());
                     IngredientUpdateService.startActionUpdate(getActivity().getApplicationContext());
                 }
             }
@@ -126,11 +119,12 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         Log.d(TAG, recipesSteps.get(position).getDescription());
         RecipeStep fragment = new RecipeStep();
         Bundle bundle = new Bundle();
-        bundle.putInt(RECIPE_STEP_POSITION, position);
-        bundle.putParcelableArrayList(RECIPE_STEPS, recipesSteps);
+        bundle.putInt(Constants.RECIPE_STEP_POSITION, position);
+        bundle.putParcelableArrayList(Constants.STEPS_LIST, recipesSteps);
         fragment.setArguments(bundle);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.placeholder, fragment, TAG_RECIPE_STEP_FRAGMENT);
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.placeholder, fragment, Constants.TAG_RECIPE_STEP_FRAGMENT);
         transaction.commit();
     }
 

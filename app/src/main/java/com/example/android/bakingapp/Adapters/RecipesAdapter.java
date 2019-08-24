@@ -47,7 +47,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapterViewHolde
         return mRecipeData.size();
     }
 
-    public void setMoviesData(ArrayList<RecipeResponse> recipeData) {
+    public void setRecipesData(ArrayList<RecipeResponse> recipeData) {
         this.mRecipeData = recipeData;
         notifyDataSetChanged();
     }

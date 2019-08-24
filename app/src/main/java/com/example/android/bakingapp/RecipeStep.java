@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.bakingapp.Models.RecipeSteps;
+import com.example.android.bakingapp.Utils.Constants;
 import com.example.android.bakingapp.databinding.FragmentRecipeStepBinding;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -40,11 +41,6 @@ import java.util.ArrayList;
 public class RecipeStep extends Fragment implements ExoPlayer.EventListener, View.OnClickListener {
 
     private static final String TAG = RecipeStep.class.getSimpleName();
-
-    private static final String TAG_RECIPE_STEP_FRAGMENT = "RecipeStep";
-
-    private static final String RECIPE_STEPS = "recipeStep";
-    private static final String RECIPE_STEP_POSITION = "recipeStepPosition";
 
     private SimpleExoPlayer mExoPlayer;
     private MediaSessionCompat mMediaSession;
@@ -72,8 +68,8 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
 
         Log.d(TAG, "onCreate");
         if (getArguments() != null) {
-            steps = getArguments().getParcelableArrayList(RECIPE_STEPS);
-            stepPosition = getArguments().getInt(RECIPE_STEP_POSITION);
+            steps = getArguments().getParcelableArrayList(Constants.STEPS_LIST);
+            stepPosition = getArguments().getInt(Constants.RECIPE_STEP_POSITION);
             step = steps.get(stepPosition);
         }
 
@@ -146,19 +142,19 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
         switch (v.getId()) {
             case R.id.buttonPrevStep:
                 stepPosition--;
-                bundle.putInt(RECIPE_STEP_POSITION, stepPosition);
-                bundle.putParcelableArrayList(RECIPE_STEPS, steps);
+                bundle.putInt(Constants.RECIPE_STEP_POSITION, stepPosition);
+                bundle.putParcelableArrayList(Constants.STEPS_LIST, steps);
                 fragment.setArguments(bundle);
-                transaction.replace(R.id.placeholder, fragment, TAG_RECIPE_STEP_FRAGMENT);
+                transaction.replace(R.id.placeholder, fragment, Constants.TAG_RECIPE_STEP_FRAGMENT);
                 transaction.commit();
                 break;
 
             case R.id.buttonNextStep:
                 stepPosition++;
-                bundle.putInt(RECIPE_STEP_POSITION, stepPosition);
-                bundle.putParcelableArrayList(RECIPE_STEPS, steps);
+                bundle.putInt(Constants.RECIPE_STEP_POSITION, stepPosition);
+                bundle.putParcelableArrayList(Constants.STEPS_LIST, steps);
                 fragment.setArguments(bundle);
-                transaction.replace(R.id.placeholder, fragment, TAG_RECIPE_STEP_FRAGMENT);
+                transaction.replace(R.id.placeholder, fragment, Constants.TAG_RECIPE_STEP_FRAGMENT);
                 transaction.commit();
                 break;
         }

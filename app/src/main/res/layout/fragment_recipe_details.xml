@@ -19,8 +19,8 @@
                 android:id="@+id/textviewIg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/margin"
+                android:layout_marginTop="@dimen/margin"
                 android:textSize="@dimen/title_text_size"
                 android:text="@string/ingredients" />
 
@@ -29,8 +29,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_marginRight="@dimen/margin"
                 android:text="@string/add"
                 android:checked="false"/>
 
@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:overScrollMode="never"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/margin"
                 android:layout_below="@+id/textviewIg"/>
         </RelativeLayout>
 
@@ -48,6 +48,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin"
             android:layout_below="@+id/ingredientsLayout">
 
             <TextView
@@ -55,14 +56,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/margin"
                 android:textSize="@dimen/title_text_size"
                 android:text="@string/steps"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recipesDetailsRecyclerView"
                 android:layout_below="@+id/textviewSteps"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_marginBottom="@dimen/margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:overScrollMode="never" />

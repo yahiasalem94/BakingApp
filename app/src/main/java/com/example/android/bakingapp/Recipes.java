@@ -2,7 +2,6 @@ package com.example.android.bakingapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -53,7 +52,7 @@ public class Recipes extends AppCompatActivity implements RecipesAdapter.Recipes
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.fragment_recipes);
+        setContentView(R.layout.activity_recipes);
 
         recipesRecyclerView = findViewById(R.id.recipesRecyclerView);
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);

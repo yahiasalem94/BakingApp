@@ -12,6 +12,9 @@ import android.widget.RemoteViews;
 
 import com.example.android.bakingapp.MainActivity;
 import com.example.android.bakingapp.R;
+import com.example.android.bakingapp.RecipeDetails;
+import com.example.android.bakingapp.Recipes;
+import com.example.android.bakingapp.Utils.SharedPreferenceUtil;
 
 public class IngredientWidgetProvider extends AppWidgetProvider {
 
@@ -19,25 +22,38 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
     private static final String FRAGMENT_VALUE = "RecipeStep";
 
     // setImageViewResource to update the widget’s image
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, String ingredient, double quantity, String measure, int appWidgetId) {
 
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
         int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        int height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
         RemoteViews rv;
-//        if (width < 300) {
-//            rv = getSinglePlantRemoteView(context, imgRes, plantId, showWater);
-//        } else {
+        if (height < 100) {
+            rv = getSingleRemoteView(context, ingredient, quantity, measure);
+        } else {
             rv = getListRemoteView(context);
-//        }
+        }
         appWidgetManager.updateAppWidget(appWidgetId, rv);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
             //Start the intent service update widget action, the service takes care of updating the widgets UI
+        IngredientUpdateService.startActionUpdate(context);
+    }
+
+    public static void updateWidget(Context context, AppWidgetManager appWidgetManager, String ingredient, double quantity, String measure, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager, ingredient, quantity, measure, appWidgetId);
         }
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
+                                          int appWidgetId, Bundle newOptions) {
+
+        IngredientUpdateService.startActionUpdate(context);
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
     @Override
@@ -55,37 +71,28 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
         // Perform any action when the last AppWidget instance for this provider is deleted
     }
 
-//    private static RemoteViews getSinglePlantRemoteView(Context context, int imgRes, long plantId, boolean showWater) {
-//        // Set the click handler to open the DetailActivity for plant ID,
-//        // or the MainActivity if plant ID is invalid
-//        Intent intent;
-//        if (plantId == PlantContract.INVALID_PLANT_ID) {
-//            intent = new Intent(context, MainActivity.class);
-//        } else { // Set on click to open the corresponding detail activity
-//            Log.d(PlantWidgetProvider.class.getSimpleName(), "plantId=" + plantId);
-//            intent = new Intent(context, PlantDetailActivity.class);
-//            intent.putExtra(PlantDetailActivity.EXTRA_PLANT_ID, plantId);
-//        }
-//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        // Construct the RemoteViews object
-//        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.plant_widget);
-//        // Update image and text
-//        views.setImageViewResource(R.id.widget_plant_image, imgRes);
-//        views.setTextViewText(R.id.widget_plant_name, String.valueOf(plantId));
-//        // Show/Hide the water drop button
-//        if (showWater) views.setViewVisibility(R.id.widget_water_button, View.VISIBLE);
-//        else views.setViewVisibility(R.id.widget_water_button, View.INVISIBLE);
-//        // Widgets allow click handlers to only launch pending intents
-//        views.setOnClickPendingIntent(R.id.widget_plant_image, pendingIntent);
-//        // Add the wateringservice click handler
-//        Intent wateringIntent = new Intent(context, PlantWateringService.class);
-//        wateringIntent.setAction(PlantWateringService.ACTION_WATER_PLANT);
-//        // Add the plant ID as extra to water only that plant when clicked
-//        wateringIntent.putExtra(PlantWateringService.EXTRA_PLANT_ID, plantId);
-//        PendingIntent wateringPendingIntent = PendingIntent.getService(context, 0, wateringIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        views.setOnClickPendingIntent(R.id.widget_water_button, wateringPendingIntent);
-//        return views;
-//    }
+    private static RemoteViews getSingleRemoteView(Context context, String ingredient, double quantity, String measure) {
+
+        Intent intent = new Intent(context, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(MainActivity.STEPS_LIST, SharedPreferenceUtil.getRecipeStepsFromSharedPrefsForKey(RecipeDetails.ADDED_STEPS, context.getApplicationContext()));
+        bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(RecipeDetails.ADDED_INGREDIENT, context.getApplicationContext()));
+        intent.putExtras(bundle);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Construct the RemoteViews object
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredient_widget);
+
+        // Update image and text
+        views.setTextViewText(R.id.textViewIngredientWidget, ingredient);
+        views.setTextViewText(R.id.textViewQuantityWidget, Double.toString(quantity));
+        views.setTextViewText(R.id.textViewMeasureWidget, measure);
+
+        // Widgets allow click handlers to only launch pending intents
+        views.setOnClickPendingIntent(R.id.widget_linear_layout, pendingIntent);
+
+        return views;
+    }
 
     /**
      * Creates and returns the RemoteViews to be displayed in the GridView mode widget

@@ -14,8 +14,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String TAG_RECIPE_STEP_FRAGMENT = "RecipeStep";
-    private static final String STEPS_LIST = "stepsList";
-    private static final String INGREDIENTS_LIST = "ingredientsList";
+    public static final String STEPS_LIST = "stepsList";
+    public static final String INGREDIENTS_LIST = "ingredientsList";
     private static final String RECIPE_STEPS = "recipeStep";
     private static final String RECIPE_STEP_POSITION = "recipeStepPosition";
 

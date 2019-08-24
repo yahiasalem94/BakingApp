@@ -24,7 +24,8 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
     private static final String TAG = RecipeDetails.class.getSimpleName();
     private static final String TAG_RECIPE_STEP_FRAGMENT = "RecipeStep";
-    private static final String ADD_RECIPE = "addedIngredient";
+    public static final String ADDED_INGREDIENT = "addedIngredient";
+    public static final String ADDED_STEPS = "addedSteps";
 
     private RecyclerView recipesStepsRecyclerView;
     private LinearLayoutManager layoutManagerSteps;
@@ -38,7 +39,7 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
     private ArrayList<RecipeSteps> recipesSteps;
     private ArrayList<RecipeIngredients> recipeIngredients;
-    private ArrayList<RecipeIngredients> savedIngredients;
+    private ArrayList<RecipeIngredients> savedIngredients = null;
 
     boolean isSaved = false;
 
@@ -68,7 +69,7 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
             }
         }
 
-        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(ADD_RECIPE, getActivity().getApplicationContext());
+        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(ADDED_INGREDIENT, getActivity().getApplicationContext());
         if (savedIngredients != null) {
             if (savedIngredients.get(0).getIngredient().equals(recipeIngredients.get(0).getIngredient())) {
                 isSaved = true;
@@ -106,9 +107,10 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
                 boolean checked = ((RadioButton) v).isChecked();
 
                 if (checked) {
-                    SharedPreferenceUtil.clearAllIngredients(getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(ADD_RECIPE, recipeIngredients, getActivity().getApplicationContext());
-                    IngredientUpdateService.startActionWaterPlant(getActivity().getApplicationContext());
+                    SharedPreferenceUtil.clearAll(getActivity().getApplicationContext());
+                    SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(ADDED_INGREDIENT, recipeIngredients, getActivity().getApplicationContext());
+                    SharedPreferenceUtil.setRecipeStepsToSharedPrefsForKey(ADDED_STEPS, recipesSteps, getActivity().getApplicationContext());
+                    IngredientUpdateService.startActionUpdate(getActivity().getApplicationContext());
                 }
             }
         });

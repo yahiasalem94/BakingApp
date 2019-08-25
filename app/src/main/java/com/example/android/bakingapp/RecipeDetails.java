@@ -110,6 +110,7 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
                 if (checked) {
                     SharedPreferenceUtil.clearAll(getActivity().getApplicationContext());
+                    SharedPreferenceUtil.setRecipeNameToSharedPrefsForKey(Constants.ADDED_RECIPE_NAME, mRecipeName, getActivity().getApplicationContext());
                     SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(Constants.ADDED_INGREDIENT, recipeIngredients, getActivity().getApplicationContext());
                     SharedPreferenceUtil.setRecipeStepsToSharedPrefsForKey(Constants.ADDED_STEPS, recipesSteps, getActivity().getApplicationContext());
                     IngredientUpdateService.startActionUpdate(getActivity().getApplicationContext());

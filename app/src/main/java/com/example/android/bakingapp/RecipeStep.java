@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,6 +68,8 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
         super.onCreate(savedInstanceState);
 
         Log.d(TAG, "onCreate");
+        setRetainInstance(true);
+
         if (getArguments() != null) {
             steps = getArguments().getParcelableArrayList(Constants.STEPS_LIST);
             stepPosition = getArguments().getInt(Constants.RECIPE_STEP_POSITION);
@@ -75,8 +78,9 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
 
         videoUrl = step.getVideoUrl();
         imageUrl = step.getImageUrl();
-        if (!videoUrl.isEmpty()) isVideo = true;
-        if (!imageUrl.isEmpty()) isImage = true;
+
+        if (!TextUtils.isEmpty(videoUrl)) isVideo = true;
+        if (!TextUtils.isEmpty(imageUrl)) isImage = true;
     }
 
     @Override
@@ -162,9 +166,32 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
         releasePlayer();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSavedInstance");
+        if (mExoPlayer != null) {
+            mExoPlayer.setPlayWhenReady(false); // pause
+            long currentPosition = mExoPlayer.getCurrentPosition();
+            outState.putLong(Constants.VIDEO_POSITION, currentPosition);
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(Constants.VIDEO_POSITION)) {
+                mExoPlayer.seekTo(savedInstanceState.getLong(Constants.VIDEO_POSITION));
+                mExoPlayer.setPlayWhenReady(true); // start
+            }
+        }
     }
 
     /* Local Functions */

@@ -1,6 +1,8 @@
 package com.example.android.bakingapp;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,6 +30,11 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        boolean isTablet = getResources().getBoolean(R.bool.isTablet);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag(Constants.TAG_RECIPE_STEP_FRAGMENT);
+
         if(getIntent().hasExtra(Constants.STEPS_LIST) && getIntent().hasExtra(Constants.INGREDIENTS_LIST)
                 && getIntent().hasExtra(Constants.RECIPE_NAME)) {
 
@@ -37,7 +44,7 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
             recipeIngredients = recipeBundle.getParcelableArrayList(Constants.INGREDIENTS_LIST);
         }
 
-        if (findViewById(R.id.master_list_fragment) != null) {
+        if (isTablet) {
 
             RecipeDetails recipeDetailsFragment = (RecipeDetails) getSupportFragmentManager().findFragmentById(R.id.master_list_fragment);
             recipeDetailsFragment.setData(recipesSteps, recipeIngredients);
@@ -54,19 +61,24 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
                 // Replace the contents of the container with the new fragment
                 ft.replace(R.id.placeholder, recipeStepFragment, Constants.TAG_RECIPE_STEP_FRAGMENT).commit();
             } else {
-                RecipeStep fragment = (RecipeStep) getSupportFragmentManager().findFragmentByTag(Constants.TAG_RECIPE_STEP_FRAGMENT);
+                RecipeStep recipeStep = (RecipeStep) getSupportFragmentManager().findFragmentByTag(Constants.TAG_RECIPE_STEP_FRAGMENT);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 // Replace the contents of the container with the new fragment
-                ft.replace(R.id.placeholder, fragment).commit();
+                ft.replace(R.id.placeholder, recipeStep).commit();
             }
+        } else if (fragment != null) {
+                RecipeStep recipeStepFragment = (RecipeStep) fragment;
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                // Replace the contents of the container with the new fragment
+                ft.replace(R.id.placeholder, recipeStepFragment).commit();
         } else {
-            RecipeDetails fragment = new RecipeDetails();
+            RecipeDetails recipeDetailsFragment = new RecipeDetails();
             recipeBundle.putString(Constants.RECIPE_NAME, recipeName);
-            fragment.setArguments(recipeBundle);
+            recipeDetailsFragment.setArguments(recipeBundle);
             // Begin the transaction
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             // Replace the contents of the container with the new fragment
-            ft.replace(R.id.placeholder, fragment).commit();
+            ft.replace(R.id.placeholder, recipeDetailsFragment).commit();
         }
 
     }

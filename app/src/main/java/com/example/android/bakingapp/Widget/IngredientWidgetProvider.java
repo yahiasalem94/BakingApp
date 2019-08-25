@@ -23,7 +23,6 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, String ingredient, double quantity, String measure, int appWidgetId) {
 
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-        int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
         int height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
         RemoteViews rv;
         if (height < 100) {
@@ -73,6 +72,7 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
 
         Intent intent = new Intent(context, RecipeDetailsMainActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putString(Constants.RECIPE_NAME, SharedPreferenceUtil.getRecipeNameFromSharedPrefsForKey(Constants.ADDED_RECIPE_NAME, context.getApplicationContext()));
         bundle.putParcelableArrayList(Constants.STEPS_LIST, SharedPreferenceUtil.getRecipeStepsFromSharedPrefsForKey(Constants.ADDED_STEPS, context.getApplicationContext()));
         bundle.putParcelableArrayList(Constants.INGREDIENTS_LIST, SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, context.getApplicationContext()));
         intent.putExtras(bundle);
@@ -103,9 +103,9 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
         // Set the GridWidgetService intent to act as the adapter for the GridView
         Intent intent = new Intent(context, ListWidgetService.class);
         views.setRemoteAdapter(R.id.widget_list_view, intent);
-        // Set the PlantDetailActivity intent to launch when clicked
+
+        // Set the RecipeDetailsMainActivity intent to launch when clicked
         Intent appIntent = new Intent(context, RecipeDetailsMainActivity.class);
-        intent.putExtra(FRAGMENT_KEY, FRAGMENT_VALUE);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.widget_list_view, pendingIntent);
 

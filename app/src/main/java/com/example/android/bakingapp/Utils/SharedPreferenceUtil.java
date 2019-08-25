@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.example.android.bakingapp.Models.RecipeIngredients;
 import com.example.android.bakingapp.Models.RecipeSteps;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -18,10 +19,10 @@ public class SharedPreferenceUtil {
         ArrayList<RecipeIngredients> recipeIngredients;
 
         SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
         String json = prefs.getString(key, "");
         Type type = new TypeToken<ArrayList<RecipeIngredients>>() {}.getType();
-        recipeIngredients = gson.fromJson(json, type);
+
+        recipeIngredients = (ArrayList) Serializer.deSerializeList(json,type);
 
         return recipeIngredients;
     }
@@ -31,12 +32,19 @@ public class SharedPreferenceUtil {
         ArrayList<RecipeSteps> recipeSteps;
 
         SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
         String json = prefs.getString(key, "");
         Type type = new TypeToken<ArrayList<RecipeSteps>>() {}.getType();
-        recipeSteps = gson.fromJson(json, type);
+        recipeSteps = (ArrayList) Serializer.deSerializeList(json,type);
 
         return recipeSteps;
+    }
+
+    public static String getRecipeNameFromSharedPrefsForKey(String key, Context context)
+    {
+        SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
+        String name = prefs.getString(key, "");
+
+        return name;
     }
 
     public static boolean setIngredientsToSharedPrefsForKey(String key, ArrayList<RecipeIngredients> ingredients, Context context)
@@ -46,8 +54,7 @@ public class SharedPreferenceUtil {
         SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        Gson gson = new Gson();
-        String json = gson.toJson(ingredients);
+        String json = Serializer.serialize(ingredients);
 
         try
         {
@@ -70,8 +77,7 @@ public class SharedPreferenceUtil {
         SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        Gson gson = new Gson();
-        String json = gson.toJson(steps);
+        String json = Serializer.serialize(steps);
 
         try
         {
@@ -86,7 +92,26 @@ public class SharedPreferenceUtil {
 
         return savedSuccessfully;
     }
+    public static boolean setRecipeNameToSharedPrefsForKey(String key, String recipeName, Context context)
+    {
+        boolean savedSuccessfully = false;
 
+        SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        try
+        {
+            editor.putString(key, recipeName);
+            editor.apply();
+            savedSuccessfully = true;
+        }
+        catch (Exception e)
+        {
+            savedSuccessfully = false;
+        }
+
+        return savedSuccessfully;
+    }
 
     public static void clearAll(Context context) {
 

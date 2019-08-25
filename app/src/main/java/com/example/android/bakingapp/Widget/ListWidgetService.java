@@ -8,6 +8,7 @@ import android.widget.RemoteViewsService;
 
 import com.example.android.bakingapp.Models.RecipeIngredients;
 import com.example.android.bakingapp.R;
+import com.example.android.bakingapp.Utils.Constants;
 import com.example.android.bakingapp.Utils.SharedPreferenceUtil;
 
 import java.util.ArrayList;
@@ -78,12 +79,14 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         views.setTextViewText(R.id.textViewQuantityWidget, Double.toString(recipeIngredients.get(position).getQuantity()));
         views.setTextViewText(R.id.textViewMeasureWidget, recipeIngredients.get(position).getMeasure());
 
-        // Fill in the onClick PendingIntent Template using the specific plant Id for each item individually
+        // Fill in the onClick PendingIntent Template using the specific info for each item individually
         Bundle extras = new Bundle();
-        extras.putString(FRAGMENT_KEY, FRAGMENT_VALUE);
+        extras.putString(Constants.RECIPE_NAME, SharedPreferenceUtil.getRecipeNameFromSharedPrefsForKey(Constants.ADDED_RECIPE_NAME, mContext.getApplicationContext()));
+        extras.putParcelableArrayList(Constants.STEPS_LIST, SharedPreferenceUtil.getRecipeStepsFromSharedPrefsForKey(Constants.ADDED_STEPS, mContext.getApplicationContext()));
+        extras.putParcelableArrayList(Constants.INGREDIENTS_LIST, SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, mContext.getApplicationContext()));
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
-        views.setOnClickFillInIntent(R.id.widget_list_view, fillInIntent);
+        views.setOnClickFillInIntent(R.id.widget_linear_layout, fillInIntent);
 
         return views;
 

@@ -16,7 +16,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapterViewHolde
 
     private ArrayList<RecipeResponse> mRecipeData;
     private final RecipesAdapterOnClickHandler mClickHandler;
-
+    int[] myImageList = new int[]{R.drawable.nutella_pie, R.drawable.brownies, R.drawable.yellow_cake, R.drawable.cheese_cake};
 
     public interface RecipesAdapterOnClickHandler {
         void onClick(int position);
@@ -39,6 +39,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapterViewHolde
     @Override
     public void onBindViewHolder(RecipesAdapterViewHolder adapterViewHolder, int position) {
         adapterViewHolder.recipeName.setText(mRecipeData.get(position).getRecipeName());
+        adapterViewHolder.recipePhoto.setImageResource(myImageList[position]);
     }
 
     @Override

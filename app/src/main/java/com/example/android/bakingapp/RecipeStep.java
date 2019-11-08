@@ -1,5 +1,6 @@
 package com.example.android.bakingapp;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,6 +11,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,13 +42,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class RecipeStep extends Fragment implements ExoPlayer.EventListener, View.OnClickListener {
+public class RecipeStep extends AppCompatActivity implements ExoPlayer.EventListener, View.OnClickListener {
 
     private static final String TAG = RecipeStep.class.getSimpleName();
 
     private SimpleExoPlayer mExoPlayer;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private Toolbar toolbar;
 
     private ArrayList<RecipeSteps> steps;
     private RecipeSteps step;
@@ -55,6 +59,7 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
     private String imageUrl;
     private boolean isVideo = false;
     private boolean isImage = false;
+    private boolean isInitialized = false;
 
 
     FragmentRecipeStepBinding binding;
@@ -68,31 +73,27 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
         super.onCreate(savedInstanceState);
 
         Log.d(TAG, "onCreate");
-        setRetainInstance(true);
 
-        if (getArguments() != null) {
-            steps = getArguments().getParcelableArrayList(Constants.STEPS_LIST);
-            stepPosition = getArguments().getInt(Constants.RECIPE_STEP_POSITION);
+        binding = DataBindingUtil.setContentView(this, R.layout.fragment_recipe_step);
+
+        toolbar = findViewById(R.id.step_toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.bringToFront();
+
+        if (getIntent().getExtras() != null) {
+            steps = getIntent().getExtras().getParcelableArrayList(Constants.STEPS_LIST);
+            stepPosition = getIntent().getExtras().getInt(Constants.RECIPE_STEP_POSITION);
             step = steps.get(stepPosition);
         }
+
+        toolbar.setTitle("YAHIA");
 
         videoUrl = step.getVideoUrl();
         imageUrl = step.getImageUrl();
 
         if (!TextUtils.isEmpty(videoUrl)) isVideo = true;
         if (!TextUtils.isEmpty(imageUrl)) isImage = true;
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        Log.d(TAG, "onCreateView");
-
-        // Inflate the fragment's layout
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_recipe_step, container, false);
-
-        Log.d(TAG, "video is " + videoUrl);
-        Log.d(TAG, "image is " + imageUrl);
 
         if ((!isVideo && isImage) || (!isVideo && !isImage)) {
             Log.d(TAG, "image url is" + " " + imageUrl);
@@ -110,15 +111,25 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
             binding.buttonNextStep.setEnabled(false);
         }
 
-        return binding.getRoot();
-
+        if (savedInstanceState != null) {
+            initialize();
+            if (savedInstanceState.containsKey(Constants.VIDEO_POSITION)) {
+                mExoPlayer.seekTo(savedInstanceState.getLong(Constants.VIDEO_POSITION));
+                mExoPlayer.setPlayWhenReady(true); // start
+            }
+        }
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        if (!isInitialized) {
+            initialize();
+        }
+    }
 
-        Log.d(TAG, "onViewCreated");
-
+    private void initialize() {
         if (isVideo) {
             Log.d(TAG, "video url is not null");
 
@@ -135,32 +146,30 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
         } else {
             binding.imageStepRecipe.setImageResource(R.drawable.unavailable);
         }
+        isInitialized = true;
     }
 
     @Override
     public void onClick(View v) {
 
-        RecipeStep fragment = new RecipeStep();
         Bundle bundle = new Bundle();
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        Intent intent = new Intent(RecipeStep.this, RecipeStep.class);
 
         switch (v.getId()) {
             case R.id.buttonPrevStep:
                 stepPosition--;
                 bundle.putInt(Constants.RECIPE_STEP_POSITION, stepPosition);
                 bundle.putParcelableArrayList(Constants.STEPS_LIST, steps);
-                fragment.setArguments(bundle);
-                transaction.replace(R.id.placeholder, fragment, Constants.TAG_RECIPE_STEP_FRAGMENT);
-                transaction.commit();
+                intent.putExtras(bundle);
+                startActivity(intent);
                 break;
 
             case R.id.buttonNextStep:
                 stepPosition++;
                 bundle.putInt(Constants.RECIPE_STEP_POSITION, stepPosition);
                 bundle.putParcelableArrayList(Constants.STEPS_LIST, steps);
-                fragment.setArguments(bundle);
-                transaction.replace(R.id.placeholder, fragment, Constants.TAG_RECIPE_STEP_FRAGMENT);
-                transaction.commit();
+                intent.putExtras(bundle);
+                startActivity(intent);
                 break;
         }
     }
@@ -183,17 +192,6 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
         }
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(Constants.VIDEO_POSITION)) {
-                mExoPlayer.seekTo(savedInstanceState.getLong(Constants.VIDEO_POSITION));
-                mExoPlayer.setPlayWhenReady(true); // start
-            }
-        }
-    }
-
     /* Local Functions */
 
     /**
@@ -203,7 +201,7 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
     private void initializeMediaSession() {
 
         // Create a MediaSessionCompat.
-        mMediaSession = new MediaSessionCompat(getActivity(), TAG);
+        mMediaSession = new MediaSessionCompat(this, TAG);
 
         // Enable callbacks from MediaButtons and TransportControls.
         mMediaSession.setFlags(
@@ -239,16 +237,16 @@ public class RecipeStep extends Fragment implements ExoPlayer.EventListener, Vie
             // Create an instance of the ExoPlayer.
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
-            mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
             binding.playerView.setPlayer(mExoPlayer);
 
             // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
 
             // Prepare the MediaSource.
-            String userAgent = Util.getUserAgent(getActivity(), "BakingApp");
+            String userAgent = Util.getUserAgent(this, "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
-                    getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
+                    this, userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }

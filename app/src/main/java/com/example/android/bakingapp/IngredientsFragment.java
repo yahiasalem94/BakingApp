@@ -109,7 +109,7 @@ public class IngredientsFragment extends Fragment implements RecipeDetailsAdapte
     @Override
     public void onClick(int position) {
 
-        Log.d(TAG, recipesSteps.get(position).getDescription());
+        /*Log.d(TAG, recipesSteps.get(position).getDescription());
         RecipeStep fragment = new RecipeStep();
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.RECIPE_STEP_POSITION, position);
@@ -118,7 +118,7 @@ public class IngredientsFragment extends Fragment implements RecipeDetailsAdapte
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(null);
         transaction.replace(R.id.placeholder, fragment, Constants.TAG_RECIPE_STEP_FRAGMENT);
-        transaction.commit();
+        transaction.commit();*/
     }
 
     private void setupRecyclerView() {

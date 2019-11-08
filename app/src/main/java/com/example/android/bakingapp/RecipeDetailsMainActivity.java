@@ -48,7 +48,6 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
         boolean isTablet = getResources().getBoolean(R.bool.isTablet);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(getResources().getString(R.string.app_name));
         setSupportActionBar(toolbar);
 
         tabLayout = findViewById(R.id.tablayout);

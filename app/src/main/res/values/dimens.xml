@@ -18,7 +18,7 @@
     <dimen name="margin">32dp</dimen>
     <dimen name="ingredient_margin">40dp</dimen>
     <dimen name="card_view_width">250dp</dimen>
-    <dimen name="card_view_height">60dp</dimen>
+    <dimen name="card_view_height">100dp</dimen>
     <dimen name="card_elevation">5dp</dimen>
     <!--
 Refer to App Widget Documentation for margin information

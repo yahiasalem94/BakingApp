@@ -38,8 +38,8 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".RecipeDetailsMainActivity"></activity>
+        <activity android:name=".RecipeDetailsMainActivity"></activity>
+        <activity android:name=".RecipeStep"></activity>
 
         <receiver
             android:name="Utils.InternetConnectionReceiver"

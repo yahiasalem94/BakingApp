@@ -1,5 +1,6 @@
 package com.example.android.bakingapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -30,9 +31,6 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
     private LinearLayoutManager layoutManagerSteps;
     private RecipeDetailsAdapter recipesStepsAdapter;
 
-    private RadioButton addButton;
-    private TextView recipeName;
-
     private ArrayList<RecipeSteps> recipesSteps;
     private ArrayList<RecipeIngredients> recipeIngredients;
     private String mRecipeName;
@@ -49,20 +47,9 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         super.onCreate(savedInstanceState);
         recipesStepsAdapter = new RecipeDetailsAdapter(this);
 
-//        if (getArguments() != null) {
-
-//            if (getArguments().containsKey(Constants.STEPS_LIST)) {
-                recipesSteps = ((RecipeDetailsMainActivity) getActivity()).recipesSteps;//getArguments().getParcelableArrayList(Constants.STEPS_LIST);
-//            }
-
-//            if (getArguments().containsKey(Constants.INGREDIENTS_LIST)) {
-                recipeIngredients = ((RecipeDetailsMainActivity) getActivity()).recipeIngredients;//getArguments().getParcelableArrayList(Constants.INGREDIENTS_LIST);
-//            }
-
-//            if (getArguments().containsKey(Constants.RECIPE_NAME)) {
-                mRecipeName = ((RecipeDetailsMainActivity) getActivity()).recipeName;//getArguments().getString(Constants.RECIPE_NAME);
-//            }
-//        }
+        recipesSteps = ((RecipeDetailsMainActivity) getActivity()).recipesSteps;
+        recipeIngredients = ((RecipeDetailsMainActivity) getActivity()).recipeIngredients;
+         mRecipeName = ((RecipeDetailsMainActivity) getActivity()).recipeName;
 
         savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, getActivity().getApplicationContext());
         if (savedIngredients != null) {
@@ -89,9 +76,6 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         layoutManagerSteps = new LinearLayoutManager(view.getContext());
         recipesStepsRecyclerView.setLayoutManager(layoutManagerSteps);
 
-        recipeName = view.findViewById(R.id.recipeName);
-        recipeName.setText(mRecipeName);
-
         // Set data adapter.
         recipesStepsRecyclerView.setAdapter(recipesStepsAdapter);
     }
@@ -104,17 +88,8 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.RECIPE_STEP_POSITION, position);
         bundle.putParcelableArrayList(Constants.STEPS_LIST, recipesSteps);
-        fragment.setArguments(bundle);
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.placeholder, fragment, Constants.TAG_RECIPE_STEP_FRAGMENT);
-        transaction.commit();
-    }
-
-    public void setData(ArrayList<RecipeSteps> recipesSteps, ArrayList<RecipeIngredients> recipeIngredients) {
-        this.recipesSteps = recipesSteps;
-        this.recipeIngredients = recipeIngredients;
-
-        recipesStepsAdapter.setRecipeSteps(recipesSteps);
+        Intent intent = new Intent(getActivity(), RecipeStep.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }

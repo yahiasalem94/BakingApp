@@ -29,8 +29,8 @@
             tools:src="@drawable/nutella_pie"/>
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
             android:background="#CCFFFFFF"
             card_view:layout_constraintTop_toTopOf="parent"
             card_view:layout_constraintBottom_toBottomOf="parent"

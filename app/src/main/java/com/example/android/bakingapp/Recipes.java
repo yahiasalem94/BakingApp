@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +37,7 @@ public class Recipes extends AppCompatActivity implements RecipesAdapter.Recipes
     private RecyclerView recipesRecyclerView;
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageDisplay;
+    private Toolbar toolbar;
 
     private LinearLayoutManager linearLayoutManager;
     private GridLayoutManager gridLayoutManager;
@@ -63,6 +65,9 @@ public class Recipes extends AppCompatActivity implements RecipesAdapter.Recipes
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_recipes);
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getResources().getString(R.string.app_name));
 
         mInternetConnectionReciever = new InternetConnectionReceiver();
         mInternetConnectionReciever.addListener(this);
@@ -141,7 +146,7 @@ public class Recipes extends AppCompatActivity implements RecipesAdapter.Recipes
     private void initializeRecyclerView() {
 
         if (dpWidth >= TABLET_MIN_WIDTH) {
-            gridLayoutManager = new GridLayoutManager(this, calculateNoOfColumns());
+            gridLayoutManager = new GridLayoutManager(this, 2);
             recipesRecyclerView.setLayoutManager(gridLayoutManager);
         } else {
             linearLayoutManager = new LinearLayoutManager(this);
@@ -164,16 +169,6 @@ public class Recipes extends AppCompatActivity implements RecipesAdapter.Recipes
         recipesRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
-    }
-
-    private static int calculateNoOfColumns() {
-
-        Log.d(TAG, dpWidth+"");
-        int scalingFactor = 200;
-        int noOfColumns = (int) (dpWidth / scalingFactor);
-        if (noOfColumns < 2)
-            noOfColumns = 2;
-        return noOfColumns;
     }
 
     private void loadData() {

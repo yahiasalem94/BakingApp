@@ -30,10 +30,6 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
     private LinearLayoutManager layoutManagerSteps;
     private RecipeDetailsAdapter recipesStepsAdapter;
 
-    private RecyclerView recipesIngredientRecyclerView;
-    private LinearLayoutManager layoutManagerIngredients;
-    private RecipeIngredientsAdapter recipeIngredientsAdapter;
-
     private RadioButton addButton;
     private TextView recipeName;
 
@@ -52,22 +48,21 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         recipesStepsAdapter = new RecipeDetailsAdapter(this);
-        recipeIngredientsAdapter = new RecipeIngredientsAdapter();
 
-        if (getArguments() != null) {
+//        if (getArguments() != null) {
 
-            if (getArguments().containsKey(Constants.STEPS_LIST)) {
-                recipesSteps = getArguments().getParcelableArrayList(Constants.STEPS_LIST);
-            }
+//            if (getArguments().containsKey(Constants.STEPS_LIST)) {
+                recipesSteps = ((RecipeDetailsMainActivity) getActivity()).recipesSteps;//getArguments().getParcelableArrayList(Constants.STEPS_LIST);
+//            }
 
-            if (getArguments().containsKey(Constants.INGREDIENTS_LIST)) {
-                recipeIngredients = getArguments().getParcelableArrayList(Constants.INGREDIENTS_LIST);
-            }
+//            if (getArguments().containsKey(Constants.INGREDIENTS_LIST)) {
+                recipeIngredients = ((RecipeDetailsMainActivity) getActivity()).recipeIngredients;//getArguments().getParcelableArrayList(Constants.INGREDIENTS_LIST);
+//            }
 
-            if (getArguments().containsKey(Constants.RECIPE_NAME)) {
-                mRecipeName = getArguments().getString(Constants.RECIPE_NAME);
-            }
-        }
+//            if (getArguments().containsKey(Constants.RECIPE_NAME)) {
+                mRecipeName = ((RecipeDetailsMainActivity) getActivity()).recipeName;//getArguments().getString(Constants.RECIPE_NAME);
+//            }
+//        }
 
         savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, getActivity().getApplicationContext());
         if (savedIngredients != null) {
@@ -78,7 +73,6 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
 
 
         recipesStepsAdapter.setRecipeSteps(recipesSteps);
-        recipeIngredientsAdapter.setRecipeIngredients(recipeIngredients);
     }
 
     @Override
@@ -95,32 +89,11 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         layoutManagerSteps = new LinearLayoutManager(view.getContext());
         recipesStepsRecyclerView.setLayoutManager(layoutManagerSteps);
 
-        recipesIngredientRecyclerView = view.findViewById(R.id.recipesIngredientsRecyclerView);
-        layoutManagerIngredients = new LinearLayoutManager(view.getContext());
-        recipesIngredientRecyclerView.setLayoutManager(layoutManagerIngredients);
-
         recipeName = view.findViewById(R.id.recipeName);
         recipeName.setText(mRecipeName);
-        addButton = view.findViewById(R.id.add_button);
-        addButton.setChecked(isSaved);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = ((RadioButton) v).isChecked();
-
-                if (checked) {
-                    SharedPreferenceUtil.clearAll(getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setRecipeNameToSharedPrefsForKey(Constants.ADDED_RECIPE_NAME, mRecipeName, getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(Constants.ADDED_INGREDIENT, recipeIngredients, getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setRecipeStepsToSharedPrefsForKey(Constants.ADDED_STEPS, recipesSteps, getActivity().getApplicationContext());
-                    IngredientUpdateService.startActionUpdate(getActivity().getApplicationContext());
-                }
-            }
-        });
 
         // Set data adapter.
         recipesStepsRecyclerView.setAdapter(recipesStepsAdapter);
-        recipesIngredientRecyclerView.setAdapter(recipeIngredientsAdapter);
     }
 
     @Override
@@ -143,6 +116,5 @@ public class RecipeDetails extends Fragment implements RecipeDetailsAdapter.Reci
         this.recipeIngredients = recipeIngredients;
 
         recipesStepsAdapter.setRecipeSteps(recipesSteps);
-        recipeIngredientsAdapter.setRecipeIngredients(recipeIngredients);
     }
 }

@@ -15,7 +15,8 @@
     <dimen name="activity_main_view_width">1dp</dimen>
     <dimen name="error_display_padding">16dp</dimen>
     <dimen name="progress_bar_dimen">42dp</dimen>
-    <dimen name="margin">20dp</dimen>
+    <dimen name="margin">32dp</dimen>
+    <dimen name="ingredient_margin">40dp</dimen>
     <dimen name="card_view_width">250dp</dimen>
     <dimen name="card_view_height">60dp</dimen>
     <dimen name="card_elevation">5dp</dimen>

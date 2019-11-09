@@ -18,6 +18,8 @@ import com.example.android.bakingapp.Adapters.PageAdapter;
 import com.example.android.bakingapp.Models.RecipeIngredients;
 import com.example.android.bakingapp.Models.RecipeSteps;
 import com.example.android.bakingapp.Utils.Constants;
+import com.example.android.bakingapp.Utils.SharedPreferenceUtil;
+import com.example.android.bakingapp.Widget.IngredientUpdateService;
 
 import java.util.ArrayList;
 
@@ -30,6 +32,10 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
     public ArrayList<RecipeSteps> recipesSteps;
     public ArrayList<RecipeIngredients> recipeIngredients;
     public String recipeName;
+    private ArrayList<RecipeIngredients> savedIngredients = null;
+    private boolean isSaved = false;
+
+    MenuItem item;
 
     private PageAdapter pageAdapter;
 
@@ -60,7 +66,6 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
-
 //        FragmentManager fragmentManager = getSupportFragmentManager();
 //        Fragment fragment = fragmentManager.findFragmentByTag(Constants.TAG_RECIPE_STEP_FRAGMENT);
 //
@@ -71,6 +76,14 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
             recipeName = getIntent().getStringExtra(Constants.RECIPE_NAME);
             recipesSteps = recipeBundle.getParcelableArrayList(Constants.STEPS_LIST);
             recipeIngredients = recipeBundle.getParcelableArrayList(Constants.INGREDIENTS_LIST);
+        }
+
+        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, getApplicationContext());
+        if (savedIngredients != null) {
+            if (savedIngredients.get(0).getIngredient().equals(recipeIngredients.get(0).getIngredient())) {
+
+                isSaved = true;
+            }
         }
 //
 //        if (isTablet) {
@@ -120,6 +133,17 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.action_favorite);
+        if (isSaved) {
+            item.setChecked(true);
+            item.setIcon(R.drawable.ic_favorite);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -128,10 +152,29 @@ public class RecipeDetailsMainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_favorite) {
-            Toast.makeText(this, "Action clicked", Toast.LENGTH_LONG).show();
+            if (item.isChecked()) {
+                isSaved = false;
+                item.setIcon(R.drawable.ic_favorite_border);
+                item.setChecked(false);
+                SharedPreferenceUtil.removeRecipeNameToSharedPrefsForKey(Constants.ADDED_RECIPE_NAME, getApplicationContext());
+                SharedPreferenceUtil.removeIngredientsToSharedPrefsForKey(Constants.ADDED_INGREDIENT, getApplicationContext());
+                SharedPreferenceUtil.removeRecipeStepsToSharedPrefsForKey(Constants.ADDED_STEPS, getApplicationContext());
+                IngredientUpdateService.startActionUpdate(getApplicationContext());
+                Toast.makeText(this, "Removed from favorites", Toast.LENGTH_LONG).show();
+            } else {
+                isSaved = true;
+                item.setIcon(R.drawable.ic_favorite);
+                item.setChecked(true);
+                SharedPreferenceUtil.clearAll(getApplicationContext());
+                SharedPreferenceUtil.setRecipeNameToSharedPrefsForKey(Constants.ADDED_RECIPE_NAME, recipeName, getApplicationContext());
+                SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(Constants.ADDED_INGREDIENT, recipeIngredients, getApplicationContext());
+                SharedPreferenceUtil.setRecipeStepsToSharedPrefsForKey(Constants.ADDED_STEPS, recipesSteps, getApplicationContext());
+                IngredientUpdateService.startActionUpdate(getApplicationContext());
+                Toast.makeText(this, "Added to favorites", Toast.LENGTH_LONG).show();
+            }
+
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

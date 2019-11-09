@@ -1,6 +1,7 @@
 package com.example.android.bakingapp;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -34,8 +35,6 @@ public class IngredientsFragment extends Fragment implements RecipeDetailsAdapte
     private RecipeIngredientsAdapter recipeIngredientsAdapter;
 
     private View mRootview;
-    private RadioButton addButton;
-    private TextView recipeName;
     private Toolbar toolbar;
     private ArrayList<RecipeSteps> recipesSteps;
     private ArrayList<RecipeIngredients> recipeIngredients;
@@ -54,19 +53,24 @@ public class IngredientsFragment extends Fragment implements RecipeDetailsAdapte
 
         recipeIngredientsAdapter = new RecipeIngredientsAdapter();
 
-        toolbar = ((RecipeDetailsMainActivity) getActivity()).toolbar;
+//        toolbar = ((RecipeDetailsMainActivity) getActivity()).toolbar;
 
-
-        recipesSteps = ((RecipeDetailsMainActivity) getActivity()).recipesSteps;//getArguments().getParcelableArrayList(Constants.STEPS_LIST);
-        recipeIngredients = ((RecipeDetailsMainActivity) getActivity()).recipeIngredients;//getArguments().getParcelableArrayList(Constants.INGREDIENTS_LIST);
-        mRecipeName = ((RecipeDetailsMainActivity) getActivity()).recipeName;//getArguments().getString(Constants.RECIPE_NAME);
-
-        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, getActivity().getApplicationContext());
-        if (savedIngredients != null) {
-            if (savedIngredients.get(0).getIngredient().equals(recipeIngredients.get(0).getIngredient())) {
-                isSaved = true;
-            }
+        if (savedInstanceState == null) {
+            recipesSteps = ((RecipeDetailsMainActivity) getActivity()).recipesSteps;//getArguments().getParcelableArrayList(Constants.STEPS_LIST);
+            recipeIngredients = ((RecipeDetailsMainActivity) getActivity()).recipeIngredients;//getArguments().getParcelableArrayList(Constants.INGREDIENTS_LIST);
+            mRecipeName = ((RecipeDetailsMainActivity) getActivity()).recipeName;//getArguments().getString(Constants.RECIPE_NAME);
+        } else {
+            recipesSteps = savedInstanceState.getParcelableArrayList(Constants.STEPS_LIST);
+            recipeIngredients =savedInstanceState.getParcelableArrayList(Constants.INGREDIENTS_LIST);
+            mRecipeName = savedInstanceState.getString(Constants.RECIPE_NAME);
         }
+
+//        savedIngredients = SharedPreferenceUtil.getIngredientsFromSharedPrefsForKey(Constants.ADDED_INGREDIENT, getActivity().getApplicationContext());
+//        if (savedIngredients != null) {
+//            if (savedIngredients.get(0).getIngredient().equals(recipeIngredients.get(0).getIngredient())) {
+//                isSaved = true;
+//            }
+//        }
 
         recipeIngredientsAdapter.setRecipeIngredients(recipeIngredients);
     }
@@ -76,11 +80,6 @@ public class IngredientsFragment extends Fragment implements RecipeDetailsAdapte
         // Inflate the fragment's layout
         mRootview = inflater.inflate(R.layout.fragment_recipe_ingredients, container, false);
         recipesIngredientRecyclerView = mRootview.findViewById(R.id.recipesIngredientsRecyclerView);
-        addButton = mRootview.findViewById(R.id.add_button);
-
-        toolbar.setTitle(mRecipeName);
-
-        addButton.setChecked(isSaved);
 
         setupRecyclerView();
 
@@ -88,22 +87,12 @@ public class IngredientsFragment extends Fragment implements RecipeDetailsAdapte
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = ((RadioButton) v).isChecked();
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-                if (checked) {
-                    SharedPreferenceUtil.clearAll(getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setRecipeNameToSharedPrefsForKey(Constants.ADDED_RECIPE_NAME, mRecipeName, getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setIngredientsToSharedPrefsForKey(Constants.ADDED_INGREDIENT, recipeIngredients, getActivity().getApplicationContext());
-                    SharedPreferenceUtil.setRecipeStepsToSharedPrefsForKey(Constants.ADDED_STEPS, recipesSteps, getActivity().getApplicationContext());
-                    IngredientUpdateService.startActionUpdate(getActivity().getApplicationContext());
-                }
-            }
-        });
-
+        outState.putString(Constants.RECIPE_NAME, mRecipeName);
+        outState.putParcelableArrayList(Constants.STEPS_LIST, recipesSteps);
+        outState.putParcelableArrayList(Constants.INGREDIENTS_LIST, recipeIngredients);
     }
 
     @Override

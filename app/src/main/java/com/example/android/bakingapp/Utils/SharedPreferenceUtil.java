@@ -70,6 +70,27 @@ public class SharedPreferenceUtil {
         return savedSuccessfully;
     }
 
+    public static boolean removeIngredientsToSharedPrefsForKey(String key, Context context)
+    {
+        boolean removedSuccessfully = false;
+
+        SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        try
+        {
+            editor.remove(key);
+            editor.apply();
+            removedSuccessfully = true;
+        }
+        catch (Exception e)
+        {
+            removedSuccessfully = false;
+        }
+
+        return removedSuccessfully;
+    }
+
     public static boolean setRecipeStepsToSharedPrefsForKey(String key, ArrayList<RecipeSteps> steps, Context context)
     {
         boolean savedSuccessfully = false;
@@ -92,6 +113,28 @@ public class SharedPreferenceUtil {
 
         return savedSuccessfully;
     }
+
+    public static boolean removeRecipeStepsToSharedPrefsForKey(String key, Context context)
+    {
+        boolean removedSuccessfully = false;
+
+        SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        try
+        {
+            editor.remove(key);
+            editor.apply();
+            removedSuccessfully = true;
+        }
+        catch (Exception e)
+        {
+            removedSuccessfully = false;
+        }
+
+        return removedSuccessfully;
+    }
+
     public static boolean setRecipeNameToSharedPrefsForKey(String key, String recipeName, Context context)
     {
         boolean savedSuccessfully = false;
@@ -111,6 +154,27 @@ public class SharedPreferenceUtil {
         }
 
         return savedSuccessfully;
+    }
+
+    public static boolean removeRecipeNameToSharedPrefsForKey(String key, Context context)
+    {
+        boolean removedSuccessfully = false;
+
+        SharedPreferences prefs = context.getSharedPreferences("com.example.android.bakingapp.Utils", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        try
+        {
+            editor.remove(key);
+            editor.apply();
+            removedSuccessfully = true;
+        }
+        catch (Exception e)
+        {
+            removedSuccessfully = false;
+        }
+
+        return removedSuccessfully;
     }
 
     public static void clearAll(Context context) {
